@@ -88,6 +88,7 @@ app.get('/storage', async (req, res) => {
     let rawdata = fs.readFileSync('test.json');
     let testData = JSON.parse(rawdata);
     console.log(`test = ${testData["html"]["h1"]}`);
+    
     res.json(testData);
 });
 
