@@ -12,6 +12,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type')
     next();
 });
 
@@ -70,26 +71,31 @@ app.get('/iss', async (req, res) => {
     res.json(data);
 });
 
-app.get('/storage', async (req, res) => {
-    //this currently only works if you have one Blob file in your container!!
-    const blobServiceClient = BlobServiceClient.fromConnectionString('[enter your azure storage connection string here]');
-    const containerClient = blobServiceClient.getContainerClient("[enter your container name here]");
-    
-    var testBlob;
-    for await (const blob of containerClient.listBlobsFlat()) {
-        testBlob = blob.name;
-        console.log('\nBlob name=', blob.name);
+app.post('/azurestorage', async (req, res) => {
+    var fileName = req.body.fileName;
+    if(fileName === 'blank'){
+        res.json({"html": {"h1": "<h1>You need to select a file from the drop down.</h1>"}})
+    } else if(fs.existsSync(`./${fileName}`)){
+        let rawdata = fs.readFileSync(`./${fileName}`);
+        let testData = JSON.parse(rawdata);
+        console.log("data is about to send\n");
+        res.json(testData);
+    } else {
+        console.log(`${fileName}`)
+        const blobServiceClient = BlobServiceClient.fromConnectionString("");//update
+        const containerClient = blobServiceClient.getContainerClient("");//update
+
+        containerClient.getBlockBlobClient(fileName).downloadToFile(`./${fileName}`);
+
+        while(!fs.existsSync(`./${fileName}`)){
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        let rawdata = fs.readFileSync(`./${fileName}`);
+        let testData = JSON.parse(rawdata);
+        console.log("data is about to send\n");
+        res.json(testData);
     }
-
-    containerClient.getBlockBlobClient(testBlob).downloadToFile("./test.json");
-    
-    await new Promise(resolve => setTimeout(resolve, 2000)); //gives the program time to download the file locally before continuing on
-
-    let rawdata = fs.readFileSync('test.json');
-    let testData = JSON.parse(rawdata);
-    console.log(`test = ${testData["html"]["h1"]}`);
-    
-    res.json(testData);
 });
 
 app.listen(port, () => {

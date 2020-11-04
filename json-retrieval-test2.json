@@ -1,0 +1,7 @@
+{
+  "html": {
+    "h1": "<h1>JT's Blob</h1>",
+    "p1": "<p1>This is a test of a full stack application to extract a blob from an Azure storage account and render it in the browser for a user</p1>",
+    "ol": "<p>Steps to follow:</p><ol>\n<li>Create a separate Express JS project for the front end and back end</li>\n<li>Create an Azure storage account with this blob stored as a JSON object</li>\n<li>Use the Azure SDK to connect the back end application to the Azure storage account</li>\n<li>Create the route from the front end to the back end, so that the application retrieves that blob when the user routes to the address</li>\n<li>Start both servers locally on different ports</li>\n<li>Browse to localhost:3000/azurestorage and hit the button and watch the magic happen!</li>\n</ol>"
+  }
+}
