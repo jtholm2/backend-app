@@ -1,8 +1,0 @@
-{
-    "appService.zipIgnorePattern": [
-        "node_modules{,/**}",
-        ".vscode{,/**}"
-    ],
-    "appService.defaultWebAppToDeploy": "/subscriptions/eb913143-4a5b-4653-97be-ed59620b78e9/resourceGroups/iss-web-app/providers/Microsoft.Web/sites/issWebAppBackEnd",
-    "appService.deploySubpath": "."
-}
