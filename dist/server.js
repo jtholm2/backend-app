@@ -87,8 +87,8 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
     if (fileName === 'blank') {
         res.json({ "html": { "h1": "<h1>You need to select a file from the drop down.</h1>" } });
     }
-    else if (fs_1.default.existsSync(path_1.join(__dirname,'..', 'storedfiles', `./${fileName}`))) {
-        const rawdata = fs_1.default.readFileSync(path_1.join(__dirname,'..', 'storedfiles', `./${fileName}`));
+    else if (fs_1.default.existsSync(path_1.join(__dirname,'..', 'storedfiles', `${fileName}`))) {
+        const rawdata = fs_1.default.readFileSync(path_1.join(__dirname,'..', 'storedfiles', `${fileName}`));
         const testData = JSON.parse(rawdata.toString());
         console.log("data is about to send\n");
         res.json(testData);
