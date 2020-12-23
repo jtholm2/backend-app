@@ -21,7 +21,7 @@ const express_1 = __importDefault(require("express"));
 const app = express_1.default();
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
-const port = 3000;
+const port = process.env.PORT;
 app.use(express_1.default.json());
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
