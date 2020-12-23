@@ -75,8 +75,8 @@ app.post('/azurestorage', async (req, res) => {
     const fileName = req.body.fileName;
     if(fileName === 'blank'){
         res.json({"html": {"h1": "<h1>You need to select a file from the drop down.</h1>"}})
-    } else if(fs.existsSync(`../storedfiles/${fileName}`)){
-        const rawdata = fs.readFileSync(`../storedfiles/${fileName}`);
+    } else if(fs.existsSync(path.join(__dirname, '..', 'storedfiles', `${fileName}`))){
+        const rawdata = fs.readFileSync(path.join(__dirname, '..', 'storedfiles', `${fileName}`));
         const testData = JSON.parse(rawdata.toString());
         console.log("data is about to send\n");
         res.json(testData);
@@ -99,7 +99,7 @@ app.post('/azurestorage', async (req, res) => {
 });
 
 app.get('/kassiendpoint', (req, res) => {
-    res.sendFile(path.join('..', 'public', 'Kassi.html'));
+    res.sendFile(path.join(__dirname, '..', 'public', 'Kassi.html'));
 });
 
 app.listen(port, () => {
