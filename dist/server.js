@@ -107,7 +107,7 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
     // }
 }));
 app.get('/kassiendpoint', (req, res) => {
-    res.sendFile(path_1.default.join(path_1.join(__dirname,'..', 'public', 'Kassi.html')));
+    res.sendFile(path_1.join(__dirname,'..', 'public', 'Kassi.html'));
 });
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
