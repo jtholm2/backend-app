@@ -98,8 +98,8 @@ app.post('/azurestorage', async (req, res) => {
     // }
 });
 
-app.get('kassiendpoint', (req, res) => {
-    res.sendFile(path.join('..', 'public', 'kassi.html'));
+app.get('/kassiendpoint', (req, res) => {
+    res.sendFile(path.join('..', 'public', 'Kassi.html'));
 });
 
 app.listen(port, () => {
