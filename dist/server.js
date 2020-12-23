@@ -106,7 +106,7 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
     //     res.json(testData);
     // }
 }));
-app.get('kassiendpoint', (req, res) => {
+app.get('/kassiendpoint', (req, res) => {
     res.sendFile(path_1.default.join(path_1.join(__dirname,'..', 'public', 'Kassi.html')));
 });
 app.listen(port, () => {
