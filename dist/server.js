@@ -12,16 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//import BlobServiceClient from '@azure/storage-blob';
-//import Connection from 'tedious';
-//import Request from 'tedious';
-//import { SSL_OP_EPHEMERAL_RSA } from 'constants';
+const storage_blob_1 = require("@azure/storage-blob");
 const fs_1 = __importDefault(require("fs"));
 const express_1 = __importDefault(require("express"));
-const app = express_1.default();
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const port = process.env.PORT;
+const app = express_1.default();
 app.use(express_1.default.json());
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -31,48 +28,6 @@ app.use((req, res, next) => {
 app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield node_fetch_1.default("http://api.open-notify.org/iss-now.json");
     const data = yield response.json();
-    //const { latitude, longitude } = data["iss_position"];
-    //const timestamp = data["timestamp"];
-    // const config = {
-    //     authentication: {
-    //       options: {
-    //         userName: "", //enter username
-    //         password: ""//enter password
-    //       },
-    //       type: "default"
-    //     },
-    //     server: "",//enter SQL server address
-    //     options: {
-    //       database: "",//enter database name
-    //       encrypt: true
-    //     }
-    //   };
-    // const connection = new Connection(config);
-    // // Attempt to connect and execute queries if connection goes through
-    // connection.on("connect", err => {
-    // if (err) {
-    //     console.error(err.message);
-    // } else {
-    //     queryDatabase();
-    // }
-    // });
-    // function queryDatabase() {
-    //     const request = new Request(
-    //         `INSERT INTO dbo.issGeoData (timestamp, latitude, longitude) VALUES(${timestamp},${latitude},${longitude})`, function(err, rowCount) {
-    //             if(err) {
-    //                 console.log(err);
-    //             } else {
-    //                 console.log(rowCount + ' rows');
-    //             }
-    //         }
-    //     );
-    //     request.on('row', function(columns) {
-    //         columns.forEach(function(column) {
-    //             console.log(column.value);
-    //         });
-    //     });
-    //     connection.execSql(request);
-    //}
     res.json(data);
 }));
 app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,25 +38,20 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
     else if (fs_1.default.existsSync(path_1.default.join(__dirname, '..', 'storedfiles', `${fileName}`))) {
         const rawdata = fs_1.default.readFileSync(path_1.default.join(__dirname, '..', 'storedfiles', `${fileName}`));
         const testData = JSON.parse(rawdata.toString());
-        console.log("data is about to send\n");
         res.json(testData);
-    } //else {
-    //     console.log(`${fileName}`)
-    //     const blobServiceClient = BlobServiceClient.fromConnectionString("");//update
-    //     const containerClient = blobServiceClient.getContainerClient("");//update
-    //     containerClient.getBlockBlobClient(fileName).downloadToFile(`./${fileName}`);
-    //     while(!fs.existsSync(`./${fileName}`)){
-    //         await new Promise(resolve => setTimeout(resolve, 500));
-    //     }
-    //     let rawdata = fs.readFileSync(`./${fileName}`);
-    //     let testData = JSON.parse(rawdata);
-    //     console.log("data is about to send\n");
-    //     res.json(testData);
-    // }
+    }
+    else {
+        const blobServiceClient = storage_blob_1.BlobServiceClient.fromConnectionString("DefaultEndpointsProtocol=https;AccountName=jtholmeswebappstorage;AccountKey=x1/LjGRM4BAKzWsioaRKVbcCI/lfrnIvyUHS0bipK7kg+zfdqiC0tKgMiQsA+dOQS9D/nsT5xsfjk1g1aRudqQ==;EndpointSuffix=core.windows.net");
+        const containerClient = blobServiceClient.getContainerClient("json-retrieval-html-render");
+        containerClient.getBlockBlobClient(fileName).downloadToFile(path_1.default.join(__dirname, '..', 'storedfiles', `${fileName}`));
+        while (!fs_1.default.existsSync(path_1.default.join(__dirname, '..', 'storedfiles', `${fileName}`))) {
+            yield new Promise(resolve => setTimeout(resolve, 500));
+        }
+        const rawdata = fs_1.default.readFileSync(path_1.default.join(__dirname, '..', 'storedfiles', `${fileName}`));
+        const testData = JSON.parse(rawdata.toString());
+        res.json(testData);
+    }
 }));
-app.get('/kassiendpoint', (req, res) => {
-    res.sendFile(path_1.default.join(__dirname, '..', 'public', 'Kassi.html'));
-});
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
