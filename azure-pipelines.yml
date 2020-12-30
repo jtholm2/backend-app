@@ -57,7 +57,7 @@ stages:
         inputs:
           azureSubscriptionEndpoint: 'Monthly Work Subscription - Use This One'
           azureContainerRegistry: '$(acrHostName)'
-          imageName: '$(imageName):$(Build.BuildId)'
+          imageName: '$(imageName):latest'
           useDefaultContext: false
           buildContext: '$(Build.ArtifactStagingDirectory)'
       
@@ -67,5 +67,5 @@ stages:
           azureSubscriptionEndpoint: 'Monthly Work Subscription - Use This One'
           azureContainerRegistry: '$(acrHostName)'
           command: 'Push an image'
-          imageName: '$(imageName):$(Build.BuildId)'
+          imageName: '$(imageName):latest'
 
