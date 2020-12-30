@@ -1,0 +1,61 @@
+trigger:
+  branches:
+    include:
+      - master
+variables:
+  buildConfiguration: 'Release'
+  location: 'West US 2'
+  acrHostName: 'sreexperimentation.azurecr.io'
+  acrName: 'sreexperimentation'
+  rgName: 'sre-experimentation'
+  imageName: 'backend'
+  nodeVersion: 10.x
+
+stages:
+
+# Build stage
+- stage: Build
+  jobs: 
+    - job: Build
+      pool: 
+        vmImage: 'Ubuntu-18.04'
+      steps:
+
+      # Create or Update the ACR resource
+      - task: AzureResourceGroupDeployment@2
+        displayName: 'Azure Deployment:Create Azure Container Registry'
+        inputs:
+          azureSubscription: 'Visual Studio Enterprise Subscription'
+          resourceGroupName: '$(rgName)'
+          location: $(location)
+          csmFile: '$(System.DefaultWorkingDirectory)/**/containerRegistry-template.json'
+          overrideParameters: '-registryName "$(acrName" -registryLocation "$(location)" -registrySku standard'
+          
+      - task: NodeTool@0
+        inputs:
+          versionSpec: $(nodeVersion)
+      - script: NODE_ENV=development npm i
+        displayName: npm install (for build)
+      - script: npm run transpile
+        displayName: Compile typescript
+      - script: |
+          rm -rf node_modules
+          npm i
+
+      - task: Docker@1
+        displayName: 'Build container image'
+        inputs:
+          azureSubscriptionEndpoint: 'Visual Studio Enterprise Subscription'
+          azureContainerRegistry: '$(acrHostName)'
+          imageName: '$(imageName):$(Build.BuildId)'
+          useDefaultContext: false
+          buildContext: '(System.DefaultWorkingDirectory)/PublishedWebApp'
+      
+      - task: Docker@1
+        displayName: 'Push container image'
+        inputs:
+          azureSubscriptionEndpoint: 'Visual Studio Enterprise Subscription'
+          azureContainerRegistry: '$(acrHostName)'
+          command: 'Push an image'
+          imageName: '$(imageName):$(Build.BuildId)'
+
