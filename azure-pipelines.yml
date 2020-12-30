@@ -42,6 +42,10 @@ stages:
           rm -rf node_modules
           npm i
 
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: $(System.DefaultWorkingDirectory)/PublishedWebApp)
+
       - task: Docker@1
         displayName: 'Build container image'
         inputs:
