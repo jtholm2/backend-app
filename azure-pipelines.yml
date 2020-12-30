@@ -8,7 +8,7 @@ variables:
   acrHostName: 'sreexperimentation.azurecr.io'
   acrName: 'sreexperimentation'
   rgName: 'sre-experimentation'
-  imageName: 'backend'
+  imageName: 'backendapp'
   nodeVersion: 10.x
 
 stages:
