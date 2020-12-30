@@ -45,7 +45,7 @@ stages:
       - task: Docker@1
         displayName: 'Build container image'
         inputs:
-          azureSubscriptionEndpoint: Monthly Work Subscription - Use This One'
+          azureSubscriptionEndpoint: 'Monthly Work Subscription - Use This One'
           azureContainerRegistry: '$(acrHostName)'
           imageName: '$(imageName):$(Build.BuildId)'
           useDefaultContext: false
