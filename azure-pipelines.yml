@@ -42,9 +42,15 @@ stages:
           rm -rf node_modules
           npm i
 
-      - task: PublishBuildArtifacts@1
+      - task: CopyFiles@2
         inputs:
-          PathtoPublish: $(System.DefaultWorkingDirectory)/PublishedWebApp)
+          SourceFolder: '$(System.DefaultWorkingDirectory)'
+          Contents: |
+            **\*.js
+            package.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+      - task: PublishBuildArtifacts@1
 
       - task: Docker@1
         displayName: 'Build container image'
@@ -53,7 +59,7 @@ stages:
           azureContainerRegistry: '$(acrHostName)'
           imageName: '$(imageName):$(Build.BuildId)'
           useDefaultContext: false
-          buildContext: '(System.DefaultWorkingDirectory)/PublishedWebApp'
+          buildContext: '$(Build.ArtifactStagingDirectory)'
       
       - task: Docker@1
         displayName: 'Push container image'
