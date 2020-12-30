@@ -1,71 +1,39 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
 trigger:
-  branches:
-    include:
-      - master
+- master
+
+resources:
+- repo: self
+
 variables:
-  buildConfiguration: 'Release'
-  location: 'West US 2'
-  acrHostName: 'sreexperimentation.azurecr.io'
-  acrName: 'sreexperimentation'
-  rgName: 'sre-experimentation'
-  imageName: 'backendapp'
-  nodeVersion: 10.x
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'cffc3f50-310e-4205-8a21-6a9db4926057'
+  imageRepository: 'backendapp'
+  containerRegistry: 'sreexperimentation.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: 'latest'
+  
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
 
 stages:
-
-# Build stage
 - stage: Build
-  jobs: 
-    - job: Build
-      pool: 
-        vmImage: 'Ubuntu-18.04'
-      steps:
-
-      # Create or Update the ACR resource
-      - task: AzureResourceGroupDeployment@2
-        displayName: 'Azure Deployment:Create Azure Container Registry'
-        inputs:
-          azureSubscription: 'Monthly Work Subscription - Use This One'
-          resourceGroupName: '$(rgName)'
-          location: $(location)
-          csmFile: '$(System.DefaultWorkingDirectory)/**/containerRegistry-template.json'
-          overrideParameters: '-registryName "$(acrName)" -registryLocation "$(location)" -registrySku standard'
-          
-      - task: NodeTool@0
-        inputs:
-          versionSpec: $(nodeVersion)
-      - script: NODE_ENV=development npm i
-        displayName: npm install (for build)
-      - script: npm run transpile
-        displayName: Compile typescript
-      - script: |
-          rm -rf node_modules
-          npm i
-
-      - task: CopyFiles@2
-        inputs:
-          SourceFolder: '$(System.DefaultWorkingDirectory)'
-          Contents: |
-            **\*.js
-            package.json
-          TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-      - task: PublishBuildArtifacts@1
-
-      - task: Docker@1
-        displayName: 'Build container image'
-        inputs:
-          azureSubscriptionEndpoint: 'Monthly Work Subscription - Use This One'
-          azureContainerRegistry: '$(acrHostName)'
-          imageName: '$(imageName):latest'
-          useDefaultContext: false
-          buildContext: '$(Build.ArtifactStagingDirectory)'
-      
-      - task: Docker@1
-        displayName: 'Push container image'
-        inputs:
-          azureSubscriptionEndpoint: 'Monthly Work Subscription - Use This One'
-          azureContainerRegistry: '$(acrHostName)'
-          command: 'Push an image'
-          imageName: '$(imageName):latest'
-
+  displayName: Build and push stage
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
