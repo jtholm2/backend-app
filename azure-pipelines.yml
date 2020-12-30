@@ -25,7 +25,7 @@ stages:
       - task: AzureResourceGroupDeployment@2
         displayName: 'Azure Deployment:Create Azure Container Registry'
         inputs:
-          azureSubscription: 'Visual Studio Enterprise Subscription'
+          azureSubscription: 'Monthly Work Subscription - Use This One'
           resourceGroupName: '$(rgName)'
           location: $(location)
           csmFile: '$(System.DefaultWorkingDirectory)/**/containerRegistry-template.json'
@@ -45,7 +45,7 @@ stages:
       - task: Docker@1
         displayName: 'Build container image'
         inputs:
-          azureSubscriptionEndpoint: 'Visual Studio Enterprise Subscription'
+          azureSubscriptionEndpoint: Monthly Work Subscription - Use This One'
           azureContainerRegistry: '$(acrHostName)'
           imageName: '$(imageName):$(Build.BuildId)'
           useDefaultContext: false
@@ -54,7 +54,7 @@ stages:
       - task: Docker@1
         displayName: 'Push container image'
         inputs:
-          azureSubscriptionEndpoint: 'Visual Studio Enterprise Subscription'
+          azureSubscriptionEndpoint: 'Monthly Work Subscription - Use This One'
           azureContainerRegistry: '$(acrHostName)'
           command: 'Push an image'
           imageName: '$(imageName):$(Build.BuildId)'
