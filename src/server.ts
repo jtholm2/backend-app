@@ -3,6 +3,7 @@ import fs from 'fs';
 import express from 'express';
 import path from 'path';
 import fetch from 'node-fetch';
+import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 const port = process.env.PORT;
 const app = express();
 
@@ -13,6 +14,13 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type')
     next();
 });
+
+const appInsights = new ApplicationInsights({ config: {
+    instrumentationKey: `${process.env.instrumentationKey}`
+    /* ...Other Configuration Options... */
+  } });
+  appInsights.loadAppInsights();
+  appInsights.trackPageView();
 
 app.get('/iss', async (req, res) => {
     const response = await fetch("http://api.open-notify.org/iss-now.json");

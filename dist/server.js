@@ -17,6 +17,7 @@ const fs_1 = __importDefault(require("fs"));
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
+const applicationinsights_web_1 = require("@microsoft/applicationinsights-web");
 const port = process.env.PORT;
 const app = express_1.default();
 app.use(express_1.default.json());
@@ -25,6 +26,12 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
+const appInsights = new applicationinsights_web_1.ApplicationInsights({ config: {
+        instrumentationKey: `${process.env.instrumentationKey}`
+        /* ...Other Configuration Options... */
+    } });
+appInsights.loadAppInsights();
+appInsights.trackPageView();
 app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield node_fetch_1.default("http://api.open-notify.org/iss-now.json");
     const data = yield response.json();
@@ -33,7 +40,7 @@ app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const fileName = req.body.fileName;
     if (fileName === 'blank') {
-        res.json({ "html": { "h1": "<h1>You need to select one of the files from the drop down.</h1>" } });
+        res.json({ "html": { "h1": "<h1>You need to select a file from the drop down.</h1>" } });
     }
     else if (fs_1.default.existsSync(path_1.default.join(__dirname, '..', 'storedfiles', `${fileName}`))) {
         const rawdata = fs_1.default.readFileSync(path_1.default.join(__dirname, '..', 'storedfiles', `${fileName}`));
