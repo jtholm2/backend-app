@@ -14,10 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const storage_blob_1 = require("@azure/storage-blob");
 const fs_1 = __importDefault(require("fs"));
+const applicationinsights_1 = __importDefault(require("applicationinsights"));
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
-const applicationinsights_web_1 = require("@microsoft/applicationinsights-web");
+//import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 const port = process.env.PORT;
 const app = express_1.default();
 app.use(express_1.default.json());
@@ -26,12 +27,23 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
-const appInsights = new applicationinsights_web_1.ApplicationInsights({ config: {
-        instrumentationKey: `${process.env.instrumentationKey}`
-        /* ...Other Configuration Options... */
-    } });
-appInsights.loadAppInsights();
-appInsights.trackPageView();
+applicationinsights_1.default.setup(`${process.env.instrumentationKey}`)
+    .setAutoDependencyCorrelation(true)
+    .setAutoCollectRequests(true)
+    .setAutoCollectPerformance(true, true)
+    .setAutoCollectExceptions(true)
+    .setAutoCollectDependencies(true)
+    .setAutoCollectConsole(true)
+    .setUseDiskRetryCaching(true)
+    .setSendLiveMetrics(false)
+    .setDistributedTracingMode(applicationinsights_1.default.DistributedTracingModes.AI)
+    .start();
+// const appInsights = new ApplicationInsights({ config: {
+//     instrumentationKey: `${process.env.instrumentationKey}`
+//     /* ...Other Configuration Options... */
+//   } });
+//   appInsights.loadAppInsights();
+//   appInsights.trackPageView();
 app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield node_fetch_1.default("http://api.open-notify.org/iss-now.json");
     const data = yield response.json();

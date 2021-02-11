@@ -4,24 +4,25 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "transpile": "tsc",
+    "compile": "tsc",
     "lint": "eslint --ext .ts .",
-    "lintertest": "npm i eslint --save-dev",
-    "build": "npm run lintertest && npm run lint && npm run transpile",
-    "prestart": "npm run build",
+    "build": "npm run lint && npm run compile",
     "start": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --exit"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@azure/storage-blob": "^12.2.1",
     "@microsoft/applicationinsights-web": "^2.5.11",
+    "applicationinsights": "^1.8.10",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "jquery": "^3.5.1",
     "jsdom": "^16.4.0",
+    "lint": "^0.7.0",
     "node-fetch": "^2.6.1",
+    "node-typescript": "^0.1.3",
     "tedious": "^9.2.1"
   },
   "devDependencies": {
@@ -31,6 +32,6 @@
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
     "eslint": "^7.19.0",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.5"
   }
 }

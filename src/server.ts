@@ -1,9 +1,10 @@
 import { BlobServiceClient } from '@azure/storage-blob';
 import fs from 'fs';
+import applicationinsights from 'applicationinsights';
 import express from 'express';
 import path from 'path';
 import fetch from 'node-fetch';
-import { ApplicationInsights } from '@microsoft/applicationinsights-web'
+//import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 const port = process.env.PORT;
 const app = express();
 
@@ -15,12 +16,23 @@ app.use((req, res, next) => {
     next();
 });
 
-const appInsights = new ApplicationInsights({ config: {
-    instrumentationKey: `${process.env.instrumentationKey}`
-    /* ...Other Configuration Options... */
-  } });
-  appInsights.loadAppInsights();
-  appInsights.trackPageView();
+applicationinsights.setup(`${process.env.instrumentationKey}`)
+.setAutoDependencyCorrelation(true)
+.setAutoCollectRequests(true)
+.setAutoCollectPerformance(true, true)
+.setAutoCollectExceptions(true)
+.setAutoCollectDependencies(true)
+.setAutoCollectConsole(true)
+.setUseDiskRetryCaching(true)
+.setSendLiveMetrics(false)
+.setDistributedTracingMode(applicationinsights.DistributedTracingModes.AI)
+.start();
+// const appInsights = new ApplicationInsights({ config: {
+//     instrumentationKey: `${process.env.instrumentationKey}`
+//     /* ...Other Configuration Options... */
+//   } });
+//   appInsights.loadAppInsights();
+//   appInsights.trackPageView();
 
 app.get('/iss', async (req, res) => {
     const response = await fetch("http://api.open-notify.org/iss-now.json");
