@@ -1,6 +1,6 @@
 import { BlobServiceClient } from '@azure/storage-blob';
 import fs from 'fs';
-import applicationinsights from 'applicationinsights';
+import * as appinsights from 'applicationinsights';
 import express from 'express';
 import path from 'path';
 import fetch from 'node-fetch';
@@ -16,7 +16,7 @@ app.use((req, res, next) => {
     next();
 });
 
-applicationinsights.setup(`${process.env.instrumentationKey}`)
+appinsights.setup('4686bcab-467b-4b68-a5d7-2af93f6a9ace')
 .setAutoDependencyCorrelation(true)
 .setAutoCollectRequests(true)
 .setAutoCollectPerformance(true, true)
@@ -25,7 +25,7 @@ applicationinsights.setup(`${process.env.instrumentationKey}`)
 .setAutoCollectConsole(true)
 .setUseDiskRetryCaching(true)
 .setSendLiveMetrics(false)
-.setDistributedTracingMode(applicationinsights.DistributedTracingModes.AI)
+.setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
 .start();
 // const appInsights = new ApplicationInsights({ config: {
 //     instrumentationKey: `${process.env.instrumentationKey}`
