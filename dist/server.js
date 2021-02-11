@@ -37,7 +37,6 @@ const appinsights = __importStar(require("applicationinsights"));
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
-//import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 const port = process.env.PORT;
 const app = express_1.default();
 app.use(express_1.default.json());
@@ -46,7 +45,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
-appinsights.setup('4686bcab-467b-4b68-a5d7-2af93f6a9ace')
+appinsights.setup(`${process.env.APPINSIGHTS_INSTRUMENTATIONKEY}`)
     .setAutoDependencyCorrelation(true)
     .setAutoCollectRequests(true)
     .setAutoCollectPerformance(true, true)
@@ -57,12 +56,6 @@ appinsights.setup('4686bcab-467b-4b68-a5d7-2af93f6a9ace')
     .setSendLiveMetrics(false)
     .setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
     .start();
-// const appInsights = new ApplicationInsights({ config: {
-//     instrumentationKey: `${process.env.instrumentationKey}`
-//     /* ...Other Configuration Options... */
-//   } });
-//   appInsights.loadAppInsights();
-//   appInsights.trackPageView();
 app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield node_fetch_1.default("http://api.open-notify.org/iss-now.json");
     const data = yield response.json();

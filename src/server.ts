@@ -4,7 +4,6 @@ import * as appinsights from 'applicationinsights';
 import express from 'express';
 import path from 'path';
 import fetch from 'node-fetch';
-//import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 const port = process.env.PORT;
 const app = express();
 
@@ -16,7 +15,7 @@ app.use((req, res, next) => {
     next();
 });
 
-appinsights.setup('4686bcab-467b-4b68-a5d7-2af93f6a9ace')
+appinsights.setup(`${process.env.APPINSIGHTS_INSTRUMENTATIONKEY}`)
 .setAutoDependencyCorrelation(true)
 .setAutoCollectRequests(true)
 .setAutoCollectPerformance(true, true)
@@ -27,12 +26,6 @@ appinsights.setup('4686bcab-467b-4b68-a5d7-2af93f6a9ace')
 .setSendLiveMetrics(false)
 .setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
 .start();
-// const appInsights = new ApplicationInsights({ config: {
-//     instrumentationKey: `${process.env.instrumentationKey}`
-//     /* ...Other Configuration Options... */
-//   } });
-//   appInsights.loadAppInsights();
-//   appInsights.trackPageView();
 
 app.get('/iss', async (req, res) => {
     const response = await fetch("http://api.open-notify.org/iss-now.json");
