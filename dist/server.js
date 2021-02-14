@@ -64,10 +64,10 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.json(testData);
     }
 }));
-app.post('/rpi', (req, res) => {
+app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const name = req.body.name;
     res.send(`Hello there ${name}`);
-});
+}));
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
