@@ -58,9 +58,10 @@ app.post('/azurestorage', async (req, res) => {
 });
 
 app.post('/rpi', async (req, res) => {
-    const name = JSON.stringify(req.body.from.name);
-    res.send(`Hello there ${name}`);
-})
+    const name = req.body.from.name;
+    const data = { "type": "message", "text": `Hello there ${name}` };
+    res.send(data);
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

@@ -65,8 +65,9 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 }));
 app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const name = JSON.stringify(req.body.from.name);
-    res.send(`Hello there ${name}`);
+    const name = req.body.from.name;
+    const data = { "type": "message", "text": `Hello there ${name}` };
+    res.send(data);
 }));
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
