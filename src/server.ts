@@ -1,6 +1,6 @@
 import { BlobServiceClient } from '@azure/storage-blob';
 import fs from 'fs';
-import * as appinsights from 'applicationinsights';
+//import * as appinsights from 'applicationinsights';
 import express from 'express';
 import path from 'path';
 import fetch from 'node-fetch';
@@ -15,17 +15,17 @@ app.use((req, res, next) => {
     next();
 });
 
-appinsights.setup(`${process.env.APPINSIGHTS_INSTRUMENTATIONKEY}`)
-.setAutoDependencyCorrelation(true)
-.setAutoCollectRequests(true)
-.setAutoCollectPerformance(true, true)
-.setAutoCollectExceptions(true)
-.setAutoCollectDependencies(true)
-.setAutoCollectConsole(true)
-.setUseDiskRetryCaching(true)
-.setSendLiveMetrics(false)
-.setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
-.start();
+// appinsights.setup(`${process.env.APPINSIGHTS_INSTRUMENTATIONKEY}`)
+// .setAutoDependencyCorrelation(true)
+// .setAutoCollectRequests(true)
+// .setAutoCollectPerformance(true, true)
+// .setAutoCollectExceptions(true)
+// .setAutoCollectDependencies(true)
+// .setAutoCollectConsole(true)
+// .setUseDiskRetryCaching(true)
+// .setSendLiveMetrics(false)
+// .setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
+// .start();
 
 app.get('/iss', async (req, res) => {
     const response = await fetch("http://api.open-notify.org/iss-now.json");
@@ -56,6 +56,11 @@ app.post('/azurestorage', async (req, res) => {
         res.json(testData);
     }
 });
+
+app.post('/rpi', (req, res) => {
+    const name = req.body.name;
+    res.send(`Hello there ${name}`);
+})
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

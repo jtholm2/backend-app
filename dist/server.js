@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -33,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const storage_blob_1 = require("@azure/storage-blob");
 const fs_1 = __importDefault(require("fs"));
-const appinsights = __importStar(require("applicationinsights"));
+//import * as appinsights from 'applicationinsights';
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -45,17 +26,17 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
-appinsights.setup(`${process.env.APPINSIGHTS_INSTRUMENTATIONKEY}`)
-    .setAutoDependencyCorrelation(true)
-    .setAutoCollectRequests(true)
-    .setAutoCollectPerformance(true, true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .setAutoCollectConsole(true)
-    .setUseDiskRetryCaching(true)
-    .setSendLiveMetrics(false)
-    .setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
-    .start();
+// appinsights.setup(`${process.env.APPINSIGHTS_INSTRUMENTATIONKEY}`)
+// .setAutoDependencyCorrelation(true)
+// .setAutoCollectRequests(true)
+// .setAutoCollectPerformance(true, true)
+// .setAutoCollectExceptions(true)
+// .setAutoCollectDependencies(true)
+// .setAutoCollectConsole(true)
+// .setUseDiskRetryCaching(true)
+// .setSendLiveMetrics(false)
+// .setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
+// .start();
 app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield node_fetch_1.default("http://api.open-notify.org/iss-now.json");
     const data = yield response.json();
@@ -83,6 +64,10 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.json(testData);
     }
 }));
+app.post('/rpi', (req, res) => {
+    const name = req.body.name;
+    res.send(`Hello there ${name}`);
+});
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
