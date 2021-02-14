@@ -58,7 +58,7 @@ app.post('/azurestorage', async (req, res) => {
 });
 
 app.post('/rpi', async (req, res) => {
-    const name = req.body.name;
+    const name = JSON.stringify(req.body.from.name);
     res.send(`Hello there ${name}`);
 })
 
