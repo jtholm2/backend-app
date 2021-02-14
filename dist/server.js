@@ -65,7 +65,7 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 }));
 app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const name = req.body.name;
+    const name = JSON.stringify(req.body.from.name);
     res.send(`Hello there ${name}`);
 }));
 app.listen(port, () => {
