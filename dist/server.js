@@ -70,7 +70,7 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const iotHubUrl = "https://jt-iot-hub.azure-devices.net/twins/rpi4-test-jt/methods?api-version=2018-06-30";
     const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=JSadXucZaGxcdw85YEux%2FEZ02YBDXU6B0tZ5neFxSaI%3D&se=1613431482&skn=iothubowner';
     let data = { "type": "message", "text": `Method call didn't work` };
-    if (method === 'rpi start') {
+    if (method === '<at>rpi</at> start') {
         node_fetch_1.default(iotHubUrl, {
             method: "POST",
             body: JSON.stringify({
