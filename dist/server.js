@@ -65,8 +65,28 @@ app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 }));
 app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const name = req.body.from.name;
-    const data = { "type": "message", "text": `Hello there ${name}` };
+    const method = req.body.text;
+    console.log(req.body.text);
+    const iotHubUrl = "https://jt-iot-hub.azure-devices.net/twins/rpi4-test-jt/methods?api-version=2018-06-30";
+    const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=JSadXucZaGxcdw85YEux%2FEZ02YBDXU6B0tZ5neFxSaI%3D&se=1613431482&skn=iothubowner';
+    let data = { "type": "message", "text": `Method call didn't work` };
+    if (method === 'start') {
+        node_fetch_1.default(iotHubUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                "methodName": "method1",
+                "responseTimeoutInSeconds": 200,
+                "payload": "sudo airodump-ng wlan1mon"
+            }),
+            headers: {
+                'Authorization': accessSignature,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(json => console.log(json));
+        data = { "type": "message", "text": `Method called successfully` };
+    }
     res.send(data);
 }));
 app.listen(port, () => {
