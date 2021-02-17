@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const storage_blob_1 = require("@azure/storage-blob");
 const fs_1 = __importDefault(require("fs"));
-//import * as appinsights from 'applicationinsights';
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -26,17 +25,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
-// appinsights.setup(`${process.env.APPINSIGHTS_INSTRUMENTATIONKEY}`)
-// .setAutoDependencyCorrelation(true)
-// .setAutoCollectRequests(true)
-// .setAutoCollectPerformance(true, true)
-// .setAutoCollectExceptions(true)
-// .setAutoCollectDependencies(true)
-// .setAutoCollectConsole(true)
-// .setUseDiskRetryCaching(true)
-// .setSendLiveMetrics(false)
-// .setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
-// .start();
 app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield node_fetch_1.default("http://api.open-notify.org/iss-now.json");
     const data = yield response.json();
@@ -68,7 +56,7 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const method = req.body.text;
     console.log(req.body.text);
     const iotHubUrl = "https://jt-iot-hub.azure-devices.net/twins/rpi4-test-jt/methods?api-version=2018-06-30";
-    const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=QfjwQdzv%2BmZ4hFrmc%2F0FARDPsWdRxdQ4EevgdGrYF2Y%3D&se=1613594464&skn=iothubowner';
+    const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=Phi5%2BL6VWMed0vBdIk6vWWOLU9%2BV8B%2BlJ6xMWx4uiuo%3D&se=1613605954&skn=iothubowner';
     let data = { "type": "message", "text": `Method call didn't work` };
     if (method.indexOf('start') !== -1) {
         node_fetch_1.default(iotHubUrl, {
@@ -76,7 +64,7 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             body: JSON.stringify({
                 "methodName": "method1",
                 "responseTimeoutInSeconds": 200,
-                "payload": "sudo airodump-ng --gpsd -w testEndPointOutput wlan1mon"
+                "payload": "screen -d -m sudo airodump-ng --gpsd -w testEndointOutput wlan1mon"
             }),
             headers: {
                 'Authorization': accessSignature,
@@ -85,7 +73,24 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         })
             .then(response => response.json())
             .then(json => console.log(json));
-        data = { "type": "message", "text": `Method called successfully` };
+        data = { "type": "message", "text": `Method started successfully` };
+    }
+    else if (method.indexOf('stop') !== -1) {
+        node_fetch_1.default(iotHubUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                "methodName": "method1",
+                "responseTimeoutInSeconds": 200,
+                "payload": "sudo pkill airodump-ng"
+            }),
+            headers: {
+                'Authorization': accessSignature,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(json => console.log(json));
+        data = { "type": "message", "text": `Method stopped successfully` };
     }
     res.send(data);
 }));

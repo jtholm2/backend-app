@@ -1,6 +1,5 @@
 import { BlobServiceClient } from '@azure/storage-blob';
 import fs from 'fs';
-//import * as appinsights from 'applicationinsights';
 import express from 'express';
 import path from 'path';
 import fetch from 'node-fetch';
@@ -14,18 +13,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type')
     next();
 });
-
-// appinsights.setup(`${process.env.APPINSIGHTS_INSTRUMENTATIONKEY}`)
-// .setAutoDependencyCorrelation(true)
-// .setAutoCollectRequests(true)
-// .setAutoCollectPerformance(true, true)
-// .setAutoCollectExceptions(true)
-// .setAutoCollectDependencies(true)
-// .setAutoCollectConsole(true)
-// .setUseDiskRetryCaching(true)
-// .setSendLiveMetrics(false)
-// .setDistributedTracingMode(appinsights.DistributedTracingModes.AI)
-// .start();
 
 app.get('/iss', async (req, res) => {
     const response = await fetch("http://api.open-notify.org/iss-now.json");
@@ -59,26 +46,43 @@ app.post('/azurestorage', async (req, res) => {
 
 app.post('/rpi', async (req, res) => {
     const method = req.body.text;
-    console.log(req.body.text)
+    console.log(req.body.text);
     const iotHubUrl = "https://jt-iot-hub.azure-devices.net/twins/rpi4-test-jt/methods?api-version=2018-06-30";
-    const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=JSadXucZaGxcdw85YEux%2FEZ02YBDXU6B0tZ5neFxSaI%3D&se=1613431482&skn=iothubowner';
+    const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=Phi5%2BL6VWMed0vBdIk6vWWOLU9%2BV8B%2BlJ6xMWx4uiuo%3D&se=1613605954&skn=iothubowner';
     let data = { "type": "message", "text": `Method call didn't work` };
-    if (method === 'start') {
+    if (method.indexOf('start') !== -1) {
         fetch(iotHubUrl, {
             method: "POST",
             body: JSON.stringify({
                 "methodName": "method1",
                 "responseTimeoutInSeconds": 200,
-                "payload": "sudo airodump-ng wlan1mon"
+                "payload": "screen -d -m sudo airodump-ng --gpsd -w testEndointOutput wlan1mon"
             }),
             headers: {
                 'Authorization': accessSignature,
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
-        .then(json => console.log(json));
-        data = { "type": "message", "text": `Method called successfully` };
+            .then(response => response.json())
+            .then(json => console.log(json));
+        data = { "type": "message", "text": `Method started successfully` };
+    }
+    else if (method.indexOf('stop') !== -1) {
+        fetch(iotHubUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                "methodName": "method1",
+                "responseTimeoutInSeconds": 200,
+                "payload": "sudo pkill airodump-ng"
+            }),
+            headers: {
+                'Authorization': accessSignature,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(json => console.log(json));
+        data = { "type": "message", "text": `Method stopped successfully` };
     }
     res.send(data);
 });
