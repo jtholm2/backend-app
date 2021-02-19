@@ -17,8 +17,10 @@ const fs_1 = __importDefault(require("fs"));
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
+const xml2json_1 = __importDefault(require("xml2json"));
 const port = process.env.PORT;
 const app = express_1.default();
+
 app.use(express_1.default.json());
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -29,6 +31,17 @@ app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield node_fetch_1.default("http://api.open-notify.org/iss-now.json");
     const data = yield response.json();
     res.json(data);
+}));
+app.get('/wifisurvey', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const blobServiceClient = storage_blob_1.BlobServiceClient.fromConnectionString("DefaultEndpointsProtocol=https;AccountName=jtrpistorage;AccountKey=XCZmb+/vyW/Hz3sRQZni3AFzigWidznGOOyvspUAgm0Ghf0s29FaUZEcu36M0S6xfOrKWQol5vWEcICIqD+ljg==;EndpointSuffix=core.windows.net");
+    const containerClient = blobServiceClient.getContainerClient("rpi-kmls");
+    containerClient.getBlockBlobClient('testEndputOutput-01.log.csv.kml').downloadToFile(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndputOutput-01.log.csv.kml'));
+    while (!fs_1.default.existsSync(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndputOutput-01.log.csv.kml'))) {
+        yield new Promise(resolve => setTimeout(resolve, 500));
+    }
+    const xml_string = fs_1.default.readFileSync(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndputOutput-01.log.csv.kml'), 'utf8');
+    const jsonString = xml2json_1.default.toJson(xml_string);
+    res.json(jsonString);
 }));
 app.post('/azurestorage', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const fileName = req.body.fileName;
@@ -56,7 +69,7 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const method = req.body.text;
     console.log(req.body.text);
     const iotHubUrl = "https://jt-iot-hub.azure-devices.net/twins/rpi4-test-jt/methods?api-version=2018-06-30";
-    const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=Phi5%2BL6VWMed0vBdIk6vWWOLU9%2BV8B%2BlJ6xMWx4uiuo%3D&se=1613605954&skn=iothubowner';
+    const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=RgO2kSDQiRGiEEbfOwlyhv5kh7X%2Fc%2FqRtHmD7Pw9Fec%3D&se=1613784758&skn=iothubowner';
     let data = { "type": "message", "text": `Method call didn't work` };
     if (method.indexOf('start') !== -1) {
         node_fetch_1.default(iotHubUrl, {
@@ -64,7 +77,7 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             body: JSON.stringify({
                 "methodName": "method1",
                 "responseTimeoutInSeconds": 200,
-                "payload": "screen -d -m sudo airodump-ng --gpsd -w testEndointOutput wlan1mon"
+                "payload": "screen -d -m sudo airodump-ng --gpsd -w testEndointOutput --output-type csv wlan1mon"
             }),
             headers: {
                 'Authorization': accessSignature,
@@ -73,7 +86,7 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         })
             .then(response => response.json())
             .then(json => console.log(json));
-        data = { "type": "message", "text": `Method started successfully` };
+        data = { "type": "message", "text": `Program started successfully` };
     }
     else if (method.indexOf('stop') !== -1) {
         node_fetch_1.default(iotHubUrl, {
@@ -90,7 +103,24 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         })
             .then(response => response.json())
             .then(json => console.log(json));
-        data = { "type": "message", "text": `Method stopped successfully` };
+        data = { "type": "message", "text": `Program stopped successfully` };
+    }
+    else if (method.indexOf('upload') !== -1) {
+        node_fetch_1.default(iotHubUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                "methodName": "method1",
+                "responseTimeoutInSeconds": 200,
+                "payload": "screen -d -m python3 csv-xml.py testEndpointOutput-01.log.csv"
+            }),
+            headers: {
+                'Authorization': accessSignature,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(json => console.log(json));
+        data = { "type": "message", "text": `Program uploaded data successfully` };
     }
     res.send(data);
 }));
