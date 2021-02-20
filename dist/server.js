@@ -77,7 +77,7 @@ app.post('/rpi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             body: JSON.stringify({
                 "methodName": "method1",
                 "responseTimeoutInSeconds": 200,
-                "payload": "screen -d -m sudo airodump-ng --gpsd -w testEndointOutput --output-format logcsv wlan1mon"
+                "payload": "screen -d -m sudo airodump-ng --gpsd -w testEndpointOutput --output-format logcsv wlan1mon"
             }),
             headers: {
                 'Authorization': accessSignature,
