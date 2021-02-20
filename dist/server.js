@@ -35,8 +35,8 @@ app.get('/iss', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.get('/wifisurvey', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const blobServiceClient = storage_blob_1.BlobServiceClient.fromConnectionString("DefaultEndpointsProtocol=https;AccountName=jtrpistorage;AccountKey=XCZmb+/vyW/Hz3sRQZni3AFzigWidznGOOyvspUAgm0Ghf0s29FaUZEcu36M0S6xfOrKWQol5vWEcICIqD+ljg==;EndpointSuffix=core.windows.net");
     const containerClient = blobServiceClient.getContainerClient("rpi-kmls");
-    containerClient.getBlockBlobClient('testEndointOutput-01.log.csv.kml').downloadToFile(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndointOutput-01.log.csv.kml'));
-    while (!fs_1.default.existsSync(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndointOutput-01.log.csv.kml'))) {
+    containerClient.getBlockBlobClient('testEndpointOutput-01.log.csv.kml').downloadToFile(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndpointOutput-01.log.csv.kml'));
+    while (!fs_1.default.existsSync(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndpointOutput-01.log.csv.kml'))) {
         yield new Promise(resolve => setTimeout(resolve, 500));
     }
     
