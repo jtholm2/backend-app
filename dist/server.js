@@ -39,6 +39,7 @@ app.get('/wifisurvey', (req, res) => __awaiter(void 0, void 0, void 0, function*
     while (!fs_1.default.existsSync(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndointOutput-01.log.csv.kml'))) {
         yield new Promise(resolve => setTimeout(resolve, 500));
     }
+    
     const xml_string = fs_1.default.readFileSync(path_1.default.join(__dirname, '..', 'storedfiles', 'testEndointOutput-01.log.csv.kml'), 'utf8');
     const jsonString = xml2json_1.default.toJson(xml_string);
     res.json(jsonString);
