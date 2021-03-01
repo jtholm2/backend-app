@@ -22,7 +22,7 @@ app.get('/iss', async (req, res) => {
 });
 
 app.get('/wifisurvey', async (req, res) => {
-    const blobServiceClient = BlobServiceClient.fromConnectionString("DefaultEndpointsProtocol=https;AccountName=jtrpistorage;AccountKey=XCZmb+/vyW/Hz3sRQZni3AFzigWidznGOOyvspUAgm0Ghf0s29FaUZEcu36M0S6xfOrKWQol5vWEcICIqD+ljg==;EndpointSuffix=core.windows.net");
+    const blobServiceClient = BlobServiceClient.fromConnectionString(`${process.env.RPI_STORAGE}`);
     const containerClient = blobServiceClient.getContainerClient("rpi-kmls");
     containerClient.getBlockBlobClient('testEndputOutput-01.log.csv.kml').downloadToFile(path.join(__dirname, '..', 'storedfiles', 'testEndputOutput-01.log.csv.kml'));
     while (!fs.existsSync(path.join(__dirname, '..', 'storedfiles', 'testEndputOutput-01.log.csv.kml'))) {
@@ -42,8 +42,8 @@ app.post('/azurestorage', async (req, res) => {
         const testData = JSON.parse(rawdata.toString());
         res.json(testData);
      } else {
-         const blobServiceClient = BlobServiceClient.fromConnectionString("DefaultEndpointsProtocol=https;AccountName=jtholmeswebappstorage;AccountKey=x1/LjGRM4BAKzWsioaRKVbcCI/lfrnIvyUHS0bipK7kg+zfdqiC0tKgMiQsA+dOQS9D/nsT5xsfjk1g1aRudqQ==;EndpointSuffix=core.windows.net");
-         const containerClient = blobServiceClient.getContainerClient("json-retrieval-html-render");
+         const blobServiceClient = BlobServiceClient.fromConnectionString("{enter storage account connection string here}");
+         const containerClient = blobServiceClient.getContainerClient("{enter container here}");
 
          containerClient.getBlockBlobClient(fileName).downloadToFile(path.join(__dirname, '..', 'storedfiles', `${fileName}`));
 
@@ -60,8 +60,8 @@ app.post('/azurestorage', async (req, res) => {
 app.post('/rpi', async (req, res) => {
     const method = req.body.text;
     console.log(req.body.text);
-    const iotHubUrl = "https://jt-iot-hub.azure-devices.net/twins/rpi4-test-jt/methods?api-version=2018-06-30";
-    const accessSignature = 'SharedAccessSignature sr=jt-iot-hub.azure-devices.net&sig=RgO2kSDQiRGiEEbfOwlyhv5kh7X%2Fc%2FqRtHmD7Pw9Fec%3D&se=1613784758&skn=iothubowner';
+    const iotHubUrl = "https://{url for your IoT Hub}/twins/{device id}/methods?api-version=2018-06-30";
+    const accessSignature = '{SAS token for rpi device }';//az iot hub generate-sas-token -d {device_id} -n {iothub_name}
     let data = { "type": "message", "text": `Method call didn't work` };
     if (method.indexOf('start') !== -1) {
         fetch(iotHubUrl, {
